@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nowcoder.community.dao.UserMapper">
+
+    <sql id="insertFields">
+        username,password,salt,email,type,status,activation_code,header_url,
+        create_time
+    </sql>
+
+    <sql id="selectFields">
+        id,username,password,salt,email,type,status,activation_code,
+        header_url, create_time
+    </sql>
+
+    <!--User selectById(int id);配置文件里实体类已经写了放到哪里  这里就不用写了
+    从User表中查询ID相等的这些字段  #为引用方法的参数   user都是指sql里的user表-->
+    <select id="selectById" resultType="User">
+        select
+        <include refid="selectFields"></include>
+        from user
+        where id = #{id}
+    </select>
+
+    <!--User selectByName(String username);-->
+    <select id="selectByName" resultType="User">
+        select
+        <include refid="selectFields"></include>
+        from user
+        where username = #{username}
+    </select>
+
+    <!--User selectByEmail(String email);参数是在调用方法的时候手动传入的-->
+    <select id="selectByEmail" resultType="User">
+        select
+        <include refid="selectFields"></include>
+        from user
+        where email = #{email}
+    </select>
+
+    <!--int insertUser(User user);  User自动识别不了  User现在是传入参数
+    id的字段对应的属性名  增加的时候Mysql底层会自动生成id
+    mybiatis会的到这个id 填入这个User里  从数据库获取到回填进来
+    对应的值从参数user里来  是属性   从后端这里插入数据库里面-->
+    <insert id="insertUser" parameterType="User" keyProperty="id">
+        insert into user (<include refid="insertFields"></include>)
+        values(#{username},#{password},#{salt},#{email},#{type},
+        #{status},#{activationCode},#{headerUrl},#{createTime});
+    </insert>
+
+    <!--int updateStatus(int id, int status);-->
+    <update id="updateStatus">
+        update user
+        set status = #{status}
+        where id = #{id};
+    </update>
+
+    <!--int updateHeader(int id, String headerUrl);-->
+    <update id="updateHeader">
+        update user
+        set header_url = #{headerUrl}
+        where id = #{id};
+    </update>
+
+    <!--int updatePassword(int id, String password);-->
+    <update id="updatePassword">
+        update user
+        set password = #{password}
+        where id = #{id};
+    </update>
+
+</mapper>

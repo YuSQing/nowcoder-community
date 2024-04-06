@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nowcoder.community.dao.DiscussPostMapper">
+
+    <sql id="selectFields">
+        id, user_id, title, content, type, status, create_time, comment_count, score
+    </sql>
+
+    <sql id="insertFields">
+        user_id, title, content, type, status, create_time, comment_count, score
+    </sql>
+
+    <!--List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit);
+    从sql里传入discusspost被实体类DiscussPost封装好了 所以在后端内可以直接查找识别
+    而传入sql里的实体类无法识别 需要加注解   参数为调用方法是手动传入 userid也是手动传入
+    offse tlimit也是   最后方法返回一个DiscussPost对象  可以直接在后端打印
+
+ 配置文件里需要为每个方法提供它所需要的sql  mybatis底层会自动帮我们生成实现类
+    根据条件获取讨论帖列表，并按照指定字段排序后进行分页展示。
+    此处是dao  传入service 传入controller 传入thymeleaf 传入浏览器
+    -->
+   <select id="selectDiscussPosts" resultType="DiscussPost">
+         select
+         <include refid="selectFields"></include>
+         from discuss_post
+         where status != 2
+         <if test="userId!=0">
+             and user_id = #{userId}
+         </if>
+         order by type desc, create_time desc
+         limit #{offset}, #{limit}
+     </select>
+    <!--int selectDiscussPostRows(@Param("userId") int userId);-->
+    <select id="selectDiscussPostRows" resultType="int">
+        select count(id)
+        from discuss_post
+        where status != 2
+        <if test="userId!=0">
+            and user_id=#{userId}
+        </if>
+    </select>
+
+</mapper>
